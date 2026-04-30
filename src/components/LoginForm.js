@@ -1,72 +1,66 @@
 "use client";
 
-import {useState} from "react";
-
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import toast from "react-hot-toast";
+import SpinnerLoader from "./SpinnerLoader";
 import styles from "./LoginForm.module.css";
 
 export default function LoginForm() {
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-     const [userEmail, setUserEmail]    = useState("");
+  const loadDemoDetails = (demo) => {
+    if (demo === 'demo1') {
+      setUserEmail("admin_demo@vizosyn.com");
+      setPassword("demo_password_1");
+    } else if (demo === 'demo2') {
+      setUserEmail("teammate_demo@vizosyn.com");
+      setPassword("demo_password_2");
+    } else {
+      setUserEmail("fresh_demo@vizosyn.com");
+      setPassword("demo_password_3");
+    }
+  };
 
-     const [userPassword, setPassword]  = useState("");
+  const handelLoginButton = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-     const [isLoading, setIsLoading]    = useState(false);
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      method: "POST",
+      mode: "cors",
+      credentials: "omit",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        "email": userEmail,
+        "password": userPassword
+      })
+    })
+      .then((reponse) => reponse.json())
+      .then((data) => {
+        if (data.message === "success") {
+          toast.success("Authentication successful. Welcome back.");
+          localStorage.setItem("vizosyn_token", data.access_token);
+          router.push('/dashboard');
+        } else {
+          toast.error("Authentication failed: " + data.detail);
+        }
+      })
+      .catch((error) => {
+        toast.error("Network Error: " + error.message);
+      })
+      .finally(() => setIsLoading(false));
+  };
 
-     const router= useRouter()
-
-     const loadDemoDetails = (demo) => {
-          if(demo === 'demo1'){
-               setUserEmail("admin_demo@vizosyn.com");
-               setPassword("demo_password_1");
-
-          } else if (demo === 'demo2'){
-               setUserEmail("teammate_demo@vizosyn.com");
-               setPassword("demo_password_2");
-
-          } else{
-               setUserEmail("fresh_demo@vizosyn.com");
-               setPassword("demo_password_3");
-          }
-     };
-     const handelLoginButton = (e) => {
-          e.preventDefault();
-          setIsLoading(true);
-
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}api/auth/login`, {
-               method         : "POST",
-               mode           : "cors",
-               credentials    : "omit",
-               headers        : {
-                    "Content-Type" : "application/json",
-                    "Accept"       : 'application/json'
-               },
-               body           : JSON.stringify({
-                    "email"        : userEmail,
-                    "password"     : userPassword
-               })}
-
-          )
-          .then((reponse) => reponse.json())
-          .then((data) => {
-               if (data.message === "success"){
-                    alert("Logged In Successfull");
-                    localStorage.setItem("vizosyn_token", data.access_token);
-                    router.push('/dashboard');
-               } else{
-                    alert("Login Failed "+ data.detail)
-               }
-          })
-          .catch((error) => {
-               alert("Network Error: "+ error.message);
-          })
-          .finally(() => setIsLoading(false));
-     };
-return (
+  return (
     <div className={styles.pageContainer}>
       <div className={styles.loginCard}>
-        
         <div className={styles.header}>
           <h1 className={styles.title}>VizoSyn Portal</h1>
           <p className={styles.subtitle}>Secure access for enterprise partners</p>
@@ -100,7 +94,7 @@ return (
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={isLoading}>
-            {isLoading ? <span className={styles.loader}></span> : "Login Securely"}
+            {isLoading ? <SpinnerLoader /> : "Login Securely"}
           </button>
         </form>
 
@@ -121,7 +115,6 @@ return (
             </span>
           </p>
         </div>
-
       </div>
     </div>
   );
