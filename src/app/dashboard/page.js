@@ -66,7 +66,6 @@ export default function Dashboard() {
     if (isLoading) {
         return (
             <div className={styles.loadingContainer}>
-                {/* Yahan humne purana spinner hatakar apna naya component call kiya */}
                 <SpinnerLoader /> 
                 <p style={{ marginTop: '15px' }}>Loading Dashboard...</p>
             </div>
@@ -108,9 +107,6 @@ export default function Dashboard() {
                         <button className={styles.actionBtn} onClick={() => router.push('/my-team')}>
                             My Team
                         </button>
-                        <button className={styles.actionBtn} onClick={() => router.push('/team-request')}>
-                            Team Requests
-                        </button>
                     </div>
                 </section>
 
@@ -122,9 +118,6 @@ export default function Dashboard() {
                         </button>
                         <button className={styles.actionBtn} onClick={() => router.push('/all-team')}>
                             Browse Teams
-                        </button>
-                        <button className={styles.actionBtn} onClick={() => router.push('/all-user')}>
-                            System Users
                         </button>
                     </div>
                 </section>
