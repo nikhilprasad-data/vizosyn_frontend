@@ -432,6 +432,9 @@ export default function MyTeamPage() {
               </div>
 
               <div className={styles.actionGroup}>
+                <button onClick={() => router.push(`/team-member?teamId=${teamData.id}`)} className={styles.primaryBtn} style={{ backgroundColor: "#0f172a" }}>
+                  View Team Members
+                </button>
                 <button onClick={() => router.push("/all-profile")} className={styles.primaryBtn}>
                   Find More Members
                 </button>
